@@ -1,0 +1,147 @@
+<div class="mt-2">
+    <h2>Tasks</h2>
+    <div class="row mt-1">
+       
+        <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-success" (click)="createTodo()">New Task</button>
+            <button type="button" class="btn btn-warning ms-1" (click)="getTodos()">Refresh</button>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="d-flex justify-content-between">
+            <span>{{todos.length}} records</span>
+            <input type="text" class="form-control w-25" placeholder="Search" name="search" [formControl]="searchInput" />
+        </div>
+    </div>
+    <div class="row mt-2">
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>  
+                    <th> AssignedTo</th>
+                    <th>Status</th>
+                    <th>Due Date</th>
+                    <th>Priority</th>
+                    <th>Comments</th>
+                    <th></th>
+                </tr>
+            </thead>
+            
+            <tbody>
+                <ng-container *ngIf="todos.length > 0">
+                    <ng-container *ngFor="let todo of todos|todoFilter:searchInput.value;let i=index">
+                        <tr>
+                            <td></td>
+                            <td>{{todo.assignedTo}}</td>
+                            <td>{{todo.status}}</td>
+                            <td>{{todo.dueDate}}</td>
+                            <td>{{todo.priority}}</td>
+                            <td>{{todo.comment}}</td>
+                            <td>
+                                
+                                <div class="dropdown border-0">
+                      
+                                    
+                                    <button type="button" class="btn btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                      Action
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                      <li class="dropdown-item" (click)="editTodo(todo, i)">Edit</li>
+                                      <li class="dropdown-item" (click)="deleteTodo(todo, i)">Delete</li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-container>
+                </ng-container>
+                <ng-container *ngIf="!todos.length">
+                    <p text-align="center" class="mt-2">No Todos</p>
+                </ng-container>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal" id="myModal" [ngStyle]="{display: createTodoDialog ? 'block': 'none'}">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">{{dialogTitle}}</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="close()"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="todoForm">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <label for="assignTo" class="form-label">Assigned To:</label>
+                            <select class="form-select" id="assignTo" formControlName="assignedTo" required="">
+                            
+                                <option value=""></option>
+                                <option value="User 1">User 1</option>
+                                <option value="User 2">User 2</option>
+                                <option value="User 3">User 3</option>
+                                <option value="User 4">User 4</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="status" class="form-label">Status:</label>
+                            <select class="form-select" id="status" formControlName="status">
+                                <option value=""></option>
+                                <option value="Not Started">Not Started</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <label for="dueDate" class="form-label">Due Date:</label>
+                            <input type="date" class="form-control" id="dueDate" formControlName="dueDate"/>
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="priority" class="form-label">Priority:</label>
+                            <select class="form-select" id="priority" formControlName="priority">
+                                <option value=""></option>
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-sm-12">
+                            <label for="comment" class="form-label">Comments:</label>
+                            <textarea class="form-control" rows="5" id="comment" name="text"
+                                formControlName="comment"></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-warning" (click)="close()">Cancel</button>
+                            <button type="button" class="btn btn-success ms-1" [disabled]="!todoForm.valid"
+                                (click)="saveTodo()">Save</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="myModal" [ngStyle]="{display: deleteTodoDialog ? 'block': 'none'}">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="close()"></button>
+            </div>
+            <div class="modal-body">
+                <p>Do you want to delete task {{selectedTodo?.comment}}?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" data-bs-dismiss="modal" (click)="close()">No</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="confirmDelete()">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
